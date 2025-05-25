@@ -11,70 +11,116 @@ void timer(int seconds) {
     system("clear");
 }
 
+struct app{
+    string app_name;
+    map<string, string> user_data;
+}app;
+
 class PasswordManager {
+
+    private:
+        map<int, struct app> apps;
     
-    map<string, string>passwords;
-    
-    bool find_matching(string name, string pass){
-        for(auto password : passwords){
-            if(password.first == name || password.second == pass){
-                return true;
+        int app_name_exist(string app_name){
+            for(auto app : apps){
+                if(app.second.app_name  == app_name){
+                    return app.first;
+                }
             }
+            return -1;
         }
-        return false;
-    }
 
     public:
-        void addPassword(string name, string password){
-            if(!find_matching(name, password)){
-                passwords[name] = password;
-                cout<<"Password addded successfully"<<std::flush;
-                timer(2);
+        void addPassword(string app_name, string user_name, string password){
+            int app_idx = app_name_exist(app_name); 
+            if( app_idx == -1){
+                app_idx = apps.size()+1;
+                struct app new_app;
+                new_app.app_name = app_name;
+                apps[app_idx] = new_app;
             }
-            else{
-                system("clear");
-                cout<<"The name or password of the app alreay exists"<<std::flush;
-                timer(2);
-            }
+            apps[app_idx].user_data[user_name] = password;
+            cout<<"Password addded successfully."<<std::flush;
+            timer(2);
         }
 
-        void updatePassword(string name, string password, string newPassword){
-            if(find_matching(name, password)){
-                passwords[name] = newPassword;
-                cout<<"Password updated successfully..."<<std::flush;
+        void updatePassword(string app_name, string user_name, string newPassword){
+            int app_idx = app_name_exist(app_name);
+            if(app_idx == -1){
+                cout<<"App name not found!";
                 timer(2);
+                return;
             }
-            else{
-                system("clear");
-                cout<<"The name or password of the app not exists"<<std::flush;
-                timer(2);
-            }
-        }
 
-        void removePassword(string name, string password){
-            if(find_matching(name, password)){
-                passwords.erase(name);
-                cout<<"Password Removed successfully..."<<std::flush;
-                timer(2);
-            }
-            else{
-                system("clear");
-                cout<<"The name or password of the app not exists"<<std::flush;
-                timer(2);
-            }
-        }
-
-        void displayPasswords(){
+            auto user_data = apps[app_idx].user_data.find(user_name);
             
-            const int nameWidth = 20;
-            const int passwordWidth = 20;
-            cout << left << setw(nameWidth) << "Name" << setw(passwordWidth) << "Password" << endl;
-            cout << string(nameWidth + passwordWidth, '-') << endl;
-            
-            for(auto password : passwords){
-                cout << left << setw(nameWidth) << password.first << setw(passwordWidth) << password.second << endl;
+            if(user_data == apps[app_idx].user_data.end()){
+                system("clear");
+                cout<<"Username does not exists!"<<std::flush;
+                timer(2);
+                return;
             }
 
+            apps[app_idx].user_data[user_name] = newPassword;
+            cout<<"Password updated successfully."<<std::flush;
+            timer(2);
+            return;
+        }
+
+        void removePassword(string app_name, string user_name){
+            int app_idx = app_name_exist(app_name);
+            if(app_idx == -1){
+                cout<<"App name not found!";
+                timer(2);
+                return;
+            }
+
+            auto user_data = apps[app_idx].user_data.find(user_name);
+            
+            if(user_data == apps[app_idx].user_data.end()){
+                system("clear");
+                cout<<"Username does not exists!"<<std::flush;
+                timer(2);
+                return;
+            }
+
+            apps[app_idx].user_data.erase(user_name);
+            cout<<"Password removed successfully."<<std::flush;
+            timer(2);
+            return;
+        }
+
+        void displayPasswords() {
+            // First, create a sorted structure by app name
+            map<string, map<string, string>> sortedApps;
+            
+            for (auto& app : apps) {
+                sortedApps[app.second.app_name] = app.second.user_data;
+            }
+            
+            // Display in a tree structure
+            cout << "Password Manager Tree:" << endl;
+            cout << "======================" << endl << endl;
+            
+            auto appIt = sortedApps.begin();
+            while (appIt != sortedApps.end()) {
+                const auto& app = *appIt;
+                bool isLastApp = (++appIt == sortedApps.end());
+                
+                cout << (isLastApp ? "└── " : "├── ") << app.first << endl;
+                
+                auto userIt = app.second.begin();
+                while (userIt != app.second.end()) {
+                    const auto& userData = *userIt;
+                    bool isLastUser = (++userIt == app.second.end());
+                    
+                    cout << (isLastApp ? "    " : "│   ") 
+                    << (isLastUser ? "└── " : "├── ") 
+                    << userData.first << " : " << userData.second << endl;
+                }
+            }
+
+            cout << endl;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
             for(int i = 15; i > 0; i--) {
@@ -116,51 +162,57 @@ int main(){
             system("clear");
         }
     }
-
+    
     if(auth){
         // Show options 
-        string newPass;
+        string app_name, user_name, password;
 
         do{
             cout<<"\n1.Add Password\n2.Update Password\n3.Remove Password\n4.List all passwords\n5.Exit"<<endl;
             cout<<"Enter the choice(Ex : 1) : ";
             cin>>ch;
             system("clear");
-            switch (ch)
-            {
-            case 1:
-                cout<<"Enter the name of the password : ";
-                cin>>name;
-                cout<<"Enter the password : ";
-                cin>>pass;
-                PwdMg.addPassword(name, pass);
-                break;
-            case 2:
-                cout<<"Enter the name of the password : ";
-                cin>>name;
-                cout<<"Enter the password : ";
-                cin>>pass;
-                cout<<"Enter the new password : ";
-                cin>>newPass;
-                PwdMg.updatePassword(name, pass, newPass);
-                break;
-            case 3:
-                cout<<"Enter the name of the password : ";
-                cin>>name;
-                cout<<"Enter the password : ";
-                cin>>pass;
-                PwdMg.removePassword(name, pass);
-                break;
-            case 4:
-                system("clear");
-                PwdMg.displayPasswords();
-                break;
-            case 5:
-                break;
-                system("clear");
-            default:
-                cout<<"Invalid Choice";
-                system("clear");
+            switch (ch) {
+                case 1:
+                    cout<<"Enter the app name : ";
+                    cin>>app_name;
+                    cout<<"Enter the username : ";
+                    cin>>user_name;
+                    cout<<"Enter the password : ";
+                    cin>>password;
+                    PwdMg.addPassword(app_name, user_name, password);
+                    break;
+                
+                case 2:
+                    cout<<"Enter the app name : ";
+                    cin>>app_name;
+                    cout<<"Enter the username : ";
+                    cin>>user_name;
+                    cout<<"Enter the password : ";
+                    cin>>password;
+                    PwdMg.updatePassword(app_name, user_name, password);
+                    break;
+                
+                case 3:
+                    cout<<"Enter the app name : ";
+                    cin>>app_name;
+                    cout<<"Enter the username : ";
+                    cin>>user_name;
+                    PwdMg.removePassword(app_name, user_name);
+                    break;
+
+                case 4:
+                    system("clear");
+                    PwdMg.displayPasswords();
+                    break;
+
+                case 5:
+                    break;
+                    system("clear");
+                    
+                default:
+                    cout<<"Invalid Choice";
+                    system("clear");
             }
         }while(ch > 0 && ch < 5);
     }
