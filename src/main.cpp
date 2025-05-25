@@ -74,9 +74,16 @@ class PasswordManager {
             for(auto password : passwords){
                 cout << left << setw(nameWidth) << password.first << setw(passwordWidth) << password.second << endl;
             }
-            cout << "\nThis screen will clear in 15 seconds...\n"<<std::flush;
-            
-            timer(15);
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            for(int i = 15; i > 0; i--) {
+                cout << "\rThis screen will clear in " << i << " seconds... " << std::flush;
+                for(int j = 0; j < 10; j++) {
+                    this_thread::sleep_for(chrono::milliseconds(100));
+                }
+            }
+            system("clear");
         }
 };
 

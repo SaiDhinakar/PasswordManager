@@ -1,2 +1,4 @@
 .vscode
-Console/main
+*.d
+obj
+PasswordManager
