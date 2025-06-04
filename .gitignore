@@ -2,3 +2,4 @@
 *.d
 obj
 PasswordManager
+password_data.bin
