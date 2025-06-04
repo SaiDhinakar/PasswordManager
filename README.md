@@ -181,10 +181,6 @@ Admin account created successfully!
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 👨‍💻 Author
 
 - **Sai Dhinakar S** - [GitHub](https://github.com/SaiDhinakar)
