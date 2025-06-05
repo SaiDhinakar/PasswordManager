@@ -13,7 +13,7 @@ A secure, lightweight command-line password manager that stores all passwords lo
 ## 🔐 Security Features
 
 - **Local Storage**: All passwords are stored locally on your device
-- **Strong Encryption**: Data is encrypted with XOR cipher and key stretching
+- **Strong Encryption**: Data is encrypted and key stretching
 - **No Internet Connection**: No data is sent over the internet
 - **Brute Force Protection**: After 3 failed login attempts, access is blocked
 - **Master Password**: Single master password protects all your stored passwords
